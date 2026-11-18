@@ -3,3 +3,5 @@ __pycache__/
 *.db
 data3/
 1팀_나상훈/experiments/models/
+.ruff_cache/
+*.zip
