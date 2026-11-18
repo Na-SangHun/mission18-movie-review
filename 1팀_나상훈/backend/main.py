@@ -11,6 +11,7 @@ from datetime import date, datetime
 
 import psycopg
 from fastapi import FastAPI, HTTPException, Query, status
+from fastapi.responses import RedirectResponse
 from psycopg.rows import dict_row
 from pydantic import BaseModel, Field, HttpUrl
 
@@ -127,6 +128,12 @@ def get_movie_or_404(conn, movie_id: int) -> dict:
 
 
 NOT_FOUND = {404: {"description": "해당 ID가 없음"}}
+
+
+@app.get("/", include_in_schema=False)
+def root():
+    """주소만 입력하면 404 대신 API 문서로 이동 (문서 목록에는 표시하지 않음)."""
+    return RedirectResponse("/docs")
 
 
 # ---------- 영화 ----------

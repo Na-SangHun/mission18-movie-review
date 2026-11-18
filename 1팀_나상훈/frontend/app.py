@@ -63,7 +63,7 @@ if msg := st.session_state.pop("flash", None):
     st.toast(msg, icon=":material/check_circle:")
 
 st.title("영화 리뷰 감성 분석")
-st.caption(f"리뷰를 남기면 KoELECTRA-small(ONNX INT8) 모델이 부정·중립·긍정을 자동 분석합니다 · 백엔드: {API}")
+st.caption(f"리뷰를 남기면 KoELECTRA-small(ONNX INT8) 모델이 부정·중립·긍정을 자동 분석합니다 · 백엔드 API 문서: {API}/docs")
 
 movies = api("GET", "/movies")
 if movies is None:
