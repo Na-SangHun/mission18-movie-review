@@ -1,5 +1,5 @@
-fastapi
-uvicorn
-onnxruntime
-tokenizers
-numpy
+fastapi==0.163.2
+uvicorn==0.40.0
+onnxruntime==1.31.1
+tokenizers==0.23.3
+numpy==2.4.6
