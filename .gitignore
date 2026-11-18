@@ -1,0 +1,5 @@
+__pycache__/
+*.onnx
+*.db
+data3/
+1팀_나상훈/experiments/models/
