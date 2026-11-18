@@ -42,3 +42,4 @@ NSMC 2,000문장에서 확신도별 실제 정확도 (INT8, bs=1) — 확신도�
 | # | 단계 | 증상 | 원인 | 해결 | 확인 방법 |
 |---|---|---|---|---|---|
 | 11 | 배포 | HF Space 생성이 "Docker Spaces on free cpu-basic requires a PRO subscription"으로 실패 (Space 404) | 계획 때 HF 무료 조건을 확인하지 않음. 현재 HF는 Docker/Gradio Space를 무료로 호스팅하지 않음 | 백엔드는 Docker Hub 이미지 + Render. Render 무료는 잠들거나 재시작하면 파일이 지워져 SQLite 데이터가 사라짐(Render 공식 문서) → DB를 **PostgreSQL(Neon, 무료·기한 없음)**로 전환 | 로컬 docker Postgres로 `test_main.py` 통과, 컨테이너(PORT=9999)에서 API 흐름 확인 |
+| 12 | 프론트 | 영화 카드 높이가 제각각 (사용자 피드백) | 포스터 원본 비율이 영화마다 다름(다크 나이트 259×383, 기생충 1000×1425 등). `st.image`는 높이 지정·자르기 미지원 | 포스터를 HTML `<img>`로 2:3 틀에 `object-fit: cover`, 카드는 4개씩 줄 단위 `st.columns` + `container(height="stretch")`. URL은 `html.escape`로 HTML 주입 차단 | 브라우저에서 카드 4개 모두 609px, 포스터 모두 264×395 측정 |

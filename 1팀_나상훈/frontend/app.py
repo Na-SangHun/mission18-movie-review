@@ -3,6 +3,7 @@
 화면만 담당하고, 모든 데이터는 백엔드(FastAPI)에 HTTP로 요청한다. (Streamlit 안에는 저장하지 않음)
 실행: streamlit run app.py   (백엔드 주소: 환경변수 또는 .streamlit/secrets.toml의 BACKEND_URL)
 """
+import html
 import os
 from datetime import date
 
@@ -50,6 +51,14 @@ def flash(msg: str):
     st.rerun()
 
 
+def poster(url: str):
+    """포스터를 2:3 비율 틀에 맞춰 표시 → 원본 비율이 달라도 카드 크기가 같아짐 (넘치는 부분은 잘림).
+    st.image는 높이·자르기를 지원하지 않아서 HTML img를 사용. URL은 사용자 입력이므로 escape해서
+    따옴표로 속성을 탈출하는 HTML 주입을 막음 (백엔드도 http/https URL만 허용)."""
+    st.markdown(f'<img src="{html.escape(url, quote=True)}" alt="포스터" style="width:100%; aspect-ratio:2/3; '
+                f'object-fit:cover; border-radius:0.5rem;">', unsafe_allow_html=True)
+
+
 BADGE = {"긍정": "green", "중립": "gray", "부정": "red"}
 
 
@@ -86,18 +95,18 @@ def confirm_delete(movie):
 with tab_movies:
     if not movies:
         st.info("등록된 영화가 없습니다. '영화 추가' 탭에서 등록해 주세요.")
-    cols = st.columns(4)
-    for i, m in enumerate(movies):
-        with cols[i % 4].container(border=True):
-            st.image(m["poster_url"])
-            st.subheader(m["title"])
-            st.caption(f"{m['release_date']} 개봉 · {m['director']} · {m['genre']}")
-            if m["rating"] is None:
-                st.markdown("평점 없음 (리뷰 0개)")
-            else:  # 평점 = 리뷰 감성 점수(긍정 + 0.5·중립)의 평균 → 10점 만점으로 환산해 표시
-                st.markdown(f":material/star: **{m['rating'] * 10:.1f}** / 10 · 리뷰 {m['review_count']}개")
-            if st.button("삭제", key=f"del{m['id']}", icon=":material/delete:"):
-                confirm_delete(m)
+    for row in range(0, len(movies), 4):  # 4개씩 한 줄: 같은 줄 카드끼리 높이를 맞추려면 줄마다 columns를 새로 만듦
+        for col, m in zip(st.columns(4), movies[row:row + 4]):
+            with col.container(border=True, height="stretch"):  # stretch: 같은 줄에서 가장 긴 카드에 높이를 맞춤
+                poster(m["poster_url"])
+                st.subheader(m["title"])
+                st.caption(f"{m['release_date']} 개봉 · {m['director']} · {m['genre']}")
+                if m["rating"] is None:
+                    st.markdown("평점 없음 (리뷰 0개)")
+                else:  # 평점 = 리뷰 감성 점수(긍정 + 0.5·중립)의 평균 → 10점 만점으로 환산해 표시
+                    st.markdown(f":material/star: **{m['rating'] * 10:.1f}** / 10 · 리뷰 {m['review_count']}개")
+                if st.button("삭제", key=f"del{m['id']}", icon=":material/delete:"):
+                    confirm_delete(m)
 
 # ---------------- 영화 추가 ----------------
 with tab_add:
