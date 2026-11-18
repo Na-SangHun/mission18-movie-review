@@ -158,6 +158,6 @@ with tab_reviews:
               "감성 점수": r["score"] * 10} for r in reviews],
             column_config={"감성 점수": st.column_config.ProgressColumn(format="%.1f", min_value=0, max_value=10),
                            "리뷰 내용": st.column_config.TextColumn(width="large")},
-            hide_index=True)
+            hide_index=True, height="content")  # 기본값 "auto"는 10행까지만 보이고 스크롤 → 영화별 보기에서 전부 표시
     elif reviews == []:
         st.caption("아직 리뷰가 없습니다.")
