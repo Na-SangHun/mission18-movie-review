@@ -1,12 +1,17 @@
-"""백엔드 전체 흐름 점검. 실행: python test_main.py (임시 DB 사용, 실제 movies.db는 건드리지 않음)"""
-import os
-import tempfile
+"""백엔드 전체 흐름 점검. 실행: python test_main.py
 
-os.environ["DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test.db")
+로컬 테스트용 Postgres가 필요: docker run -d -p 5432:5432 -e POSTGRES_USER=app -e POSTGRES_PASSWORD=app \
+    -e POSTGRES_DB=appdb postgres:16-alpine
+테이블을 지우고 시작하므로 localhost DB에서만 실행되게 막음 (배포 DB를 실수로 지우지 않도록)
+"""
+import psycopg
+from fastapi.testclient import TestClient
 
-from fastapi.testclient import TestClient  # noqa: E402
+from main import DATABASE_URL, app
 
-from main import app  # noqa: E402
+assert "@localhost" in DATABASE_URL or "@127.0.0.1" in DATABASE_URL, "로컬 DB에서만 실행하세요"
+with psycopg.connect(DATABASE_URL) as conn:
+    conn.execute("DROP TABLE IF EXISTS reviews, movies")
 
 MOVIE = {"title": "기생충", "release_date": "2019-05-30", "director": "봉준호",
          "genre": "드라마", "poster_url": "https://example.com/p.jpg"}

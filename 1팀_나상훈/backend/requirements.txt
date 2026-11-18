@@ -3,3 +3,4 @@ uvicorn==0.40.0
 onnxruntime==1.31.1
 tokenizers==0.23.3
 numpy==2.4.6
+psycopg[binary]==3.3.9
